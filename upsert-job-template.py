@@ -25,18 +25,18 @@ def main():
     credentials = assumed_role_object['Credentials']
     mediaconvert_client = boto3.client(
         'mediaconvert',
-        endpoint_url=mediaconvert_endpoint,
         aws_access_key_id=credentials['AccessKeyId'],
         aws_secret_access_key=credentials['SecretAccessKey'],
         aws_session_token=credentials['SessionToken']
     )
 
 
+    # If an endpoint is provided, use it, otherwise describe the endpoint and handle rate limiting
     if len(sys.argv) == 5:
         mediaconvert_endpoint = sys.argv[4]
     else:
         mediaconvert_endpoint = describe_endpoint(mediaconvert_client)
-
+    mediaconvert_client._endpoint.host = mediaconvert_endpoint
 
     # Try to get the job template to see if it already exists
     try:
